@@ -8,3 +8,5 @@ merojob_response = requests.get(merojob_url)
 
 merojob_html = merojob_response.text
 merojob_soup = BeautifulSoup(merojob_html, 'html.parser')
+
+job_postings = merojob_soup.select('div[itemtype="http://schema.org/JobPosting"]')
