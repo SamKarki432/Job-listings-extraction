@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 # Merojob job listing url
 merojob_url = "https://merojob.com/services/top-job/"
 
+all_jobs = []
 while(merojob_url):
     merojob_response = requests.get(merojob_url)
 
@@ -13,7 +14,7 @@ while(merojob_url):
     merojob_soup = BeautifulSoup(merojob_html, 'html.parser')
 
     job_postings = merojob_soup.select('div[itemtype="http://schema.org/JobPosting"]')
-    all_jobs = []
+
     merojob_listing_dict = {}
 
     for job in job_postings:
@@ -46,3 +47,5 @@ while(merojob_url):
         print(urljoin(merojob_url,jobs_pages))
     else: 
         merojob_url = 0
+
+print(all_jobs)
