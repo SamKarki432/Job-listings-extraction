@@ -3,25 +3,35 @@ import requests
 import pandas as pd
 from urllib.parse import urljoin
 
-# Merojob job listing url
+# Merojob jobs url
 merojob_url = "https://merojob.com/services/top-job/"
 
+# Funtion to extract information from individual job page
+def scrape_job_details():
+    job_description_page_link = "https://merojob.com/real-estate-agent-11/"
+    # Get job description page
+    job_page = requests.get(job_description_page_link)
+    job_page_html = job_page.text
+    job_page_parsed = BeautifulSoup(job_page_html,'html.parser')
+    print(job_page_parsed)
+
 all_jobs = []
+
 while(merojob_url):
     merojob_response = requests.get(merojob_url)
 
     merojob_html = merojob_response.text
-    merojob_soup = BeautifulSoup(merojob_html, 'html.parser')
+    merojob_parsed = BeautifulSoup(merojob_html, 'html.parser')
 
-    job_postings = merojob_soup.select('div[itemtype="http://schema.org/JobPosting"]')
+    job_postings = merojob_parsed.select('div[itemtype="http://schema.org/JobPosting"]')
 
     merojob_listing_dict = {}
 
     for job in job_postings:
         # Get link to job description
-        job_description_link = job.select('h1 a')[0]['href']
+        job_description_page_link = job.select('h1 a')[0]['href']
         #print(job_description_link)
-        job_description_link = urljoin(merojob_url,job_description_link)
+        job_description_page_link = urljoin(merojob_url,job_description_page_link)
 
         # Get link to employer profile 
         # If employer profile link not available, then show "Not available"
@@ -33,19 +43,20 @@ while(merojob_url):
         else:
             employer_profile_link ="Not available"
 
-        job_links = {   "job_description_link": job_description_link,
+        job_info_links = {   "job_description_link": job_description_page_link,
                         "employer_profile_link": employer_profile_link
                         }
-        all_jobs.append(job_links)
+
+        all_jobs.append(job_info_links)
 
     # Get link for next page
-    jobs_pages =  merojob_soup.select('nav[aria-label="Page navigation example"] a[class="pagination-next page-link"]')
+    jobs_pages =  merojob_parsed.select('nav[aria-label="Page navigation example"] a[class="pagination-next page-link"]')
     # Check if next page exists, if not exists set merojob_url as 0
     if(jobs_pages):
         jobs_pages = jobs_pages[0]['href']
         merojob_url = urljoin(merojob_url,jobs_pages)
-        print(urljoin(merojob_url,jobs_pages))
     else: 
         merojob_url = 0
 
-print(all_jobs)
+
+scrape_job_details()
