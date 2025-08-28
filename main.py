@@ -13,7 +13,13 @@ def scrape_job_details():
     job_page = requests.get(job_description_page_link)
     job_page_html = job_page.text
     job_page_parsed = BeautifulSoup(job_page_html,'html.parser')
-    print(job_page_parsed)
+
+    job_title = job_page_parsed.select('h1[itemprop="title"]')[0]
+
+    job_detail_dictionary ={"Job Title": job_title.get_text(strip=True)}
+    
+    job_details = job_page_parsed.select('div[class="card-body"]')[2]
+    info_and_specs =  job_details.select('table')    
 
 all_jobs = []
 
