@@ -15,11 +15,23 @@ def scrape_job_details():
     job_page_parsed = BeautifulSoup(job_page_html,'html.parser')
 
     job_title = job_page_parsed.select('h1[itemprop="title"]')[0]
-
     job_detail_dictionary ={"Job Title": job_title.get_text(strip=True)}
     
     job_details = job_page_parsed.select('div[class="card-body"]')[2]
-    info_and_specs =  job_details.select('table')    
+    job_info =  job_details.select('table')[0]
+    job_specs =  job_details.select('table')[1]    
+
+    job_info = job_info.select('tr')
+    job_specs = job_specs.select('tr')
+
+    for row_data in job_info:
+        for data in row_data:
+            print(data.text.strip())
+
+    for spec_row in job_specs:
+        for data in spec_row:
+            print(data.text.strip())
+
 
 all_jobs = []
 
