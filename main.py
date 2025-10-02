@@ -104,6 +104,27 @@ scrape_job_details(all_jobs_links)
 
 all_jobs_df = pd.DataFrame(all_jobs)
 
-#
+# Clean data of all_jobs_df
 
-#all_jobs_df.to_excel("merojob_job_list_v1.xlsx")
+# No. of Vacancy/s, Current form : [ 1 ], convert to integer 1
+all_jobs_df["No. of Vacancy/s"] = (
+    all_jobs_df["No. of Vacancy/s"]
+    .str.replace(r"\[|\]", "", regex=True)
+    .str.strip()
+    .astype(int)
+)
+
+# Professional Skill Required column , current skills are seperated with newline, seperate them with || instead
+all_jobs_df["Professional Skill Required"] = (
+    all_jobs_df["Professional Skill Required"]
+    .str.replace(r"\n"," || ",regex=True)
+    .str.strip()
+)
+
+# Apply Before(Deadline) and Employment Type column , replace newline and/or \xa0, tabs with //
+all_jobs_df[["Apply Before(Deadline)","Employment Type"]] = all_jobs_df[["Apply Before(Deadline)","Employment Type"]].apply(
+    lambda col: col.str.replace(r"\s{2,}", " // ", regex=True).str.strip()
+)
+
+# Export data to an excel file
+all_jobs_df.to_excel("merojob_job_list_v1.xlsx")
