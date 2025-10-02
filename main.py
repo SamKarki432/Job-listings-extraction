@@ -7,15 +7,14 @@ import re
 # Merojob jobs url
 merojob_url = "https://merojob.com/services/top-job/"
 all_jobs = []
+skipped_jobs = []
 
 # Funtion to extract information from individual job page
 def scrape_job_details(all_jobs_links):
     
     for job_link in all_jobs_links:
 
-        # job_description_page_link = "https://merojob.com/real-estate-agent-11/"
         job_description_page_link = job_link["job_description_link"]
-        print(job_description_page_link)
         # Get job description page
         job_page = requests.get(job_description_page_link)
         job_page_html = job_page.text
@@ -33,6 +32,8 @@ def scrape_job_details(all_jobs_links):
                             }
         except IndexError:
             print("Skipping job: structure missing")
+            # Store Skipped job links in a seperate list
+            skipped_jobs.append(job_link)
             continue
 
         job_info = job_info.select('tr')
@@ -55,7 +56,6 @@ def scrape_job_details(all_jobs_links):
 
         all_jobs.append(job_specs_dict)
     
-
 all_jobs_links = []
 
 while(merojob_url):
@@ -102,6 +102,8 @@ while(merojob_url):
 
 scrape_job_details(all_jobs_links)
 
-df = pd.DataFrame(all_jobs)
+all_jobs_df = pd.DataFrame(all_jobs)
 
-print(df.columns)
+#
+
+#all_jobs_df.to_excel("merojob_job_list_v1.xlsx")
